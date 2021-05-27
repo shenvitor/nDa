@@ -1,0 +1,41 @@
+# Macro file for nDa
+# 
+# To be run preferably in batch, without graphics:
+# % nDa[a,b] runFe.mac
+#
+/tracking/storeTrajectory 0
+/run/numberOfThreads 24
+/run/initialize
+/control/execute gps_iso.mac
+/gps/particle neutron
+/gps/energy 14 MeV
+
+/nDa/det/setTargetMaterial G4_Al
+
+/nDa/det/setTargetRadius 7 cm
+/analysis/setFileName 14nAluminumOutput/n-7cmAl.root
+/run/beamOn 1000000
+
+/nDa/det/setTargetRadius 6 cm
+/analysis/setFileName 14nAluminumOutput/n-6cmAl.root
+/run/beamOn 1000000
+
+/nDa/det/setTargetRadius 5 cm
+/analysis/setFileName 14nAluminumOutput/n-5cmAl.root
+/run/beamOn 1000000
+
+/nDa/det/setTargetRadius 4 cm
+/analysis/setFileName 14nAluminumOutput/n-4cmAl.root
+/run/beamOn 1000000
+
+/nDa/det/setTargetRadius 3 cm
+/analysis/setFileName 14nAluminumOutput/n-3cmAl.root
+/run/beamOn 1000000
+
+/nDa/det/setTargetRadius 2 cm
+/analysis/setFileName 14nAluminumOutput/n-2cmAl.root
+/run/beamOn 1000000
+
+/nDa/det/setTargetRadius 1 cm
+/analysis/setFileName 14nAluminumOutput/n-1cmAl.root
+/run/beamOn 1000000

@@ -1,0 +1,17 @@
+# Macro file for nDa
+# 
+# To be run preferably in batch, without graphics:
+# % nDa[a,b] runFe.mac
+#
+
+/run/initialize
+
+/control/execute gps_iso.mac
+/gps/particle neutron
+/gps/energy 14 MeV
+
+/tracking/storeTrajectory 0
+
+/nDa/det/setTargetRadius 7 cm
+/analysis/setFileName IronOutputTest/n-7cmFe.root
+/run/beamOn 10000

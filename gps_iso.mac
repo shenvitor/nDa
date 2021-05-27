@@ -1,0 +1,8 @@
+/gps/position 0 0 -1005 cm
+/gps/particle neutron
+
+/gps/ang/type iso
+/gps/ang/rot1 0 1 0
+/gps/ang/rot2 1 0 0
+/gps/ang/mintheta 0 deg
+/gps/ang/maxtheta 10 deg
