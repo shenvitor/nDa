@@ -1,0 +1,17 @@
+# Macro file for nDa
+# To be run preferably in batch, without graphics:
+# % nDa[a,b] runFe.mac
+
+/tracking/storeTrajectory 0
+/run/numberOfThreads 24
+/run/initialize
+/control/execute gps_iso.mac
+
+/gps/particle neutron
+/gps/energy 14 MeV
+/analysis/setFileName THU-BoxOutput/14n-Fe.root
+/run/beamOn 1000000
+
+/gps/energy 5 MeV
+/analysis/setFileName THU-BoxOutput/5n-Fe.root
+/run/beamOn 1000000

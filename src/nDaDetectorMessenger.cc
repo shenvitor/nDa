@@ -83,54 +83,14 @@ nDaDetectorMessenger::nDaDetectorMessenger(nDaDetectorConstruction* Det)
   fTargRadCmd = new G4UIcmdWithADoubleAndUnit("/nDa/det/setTargetRadius",this);
   fTargRadCmd->SetGuidance("Set the radius of the Target Ball. [radius] [unit]");
   fTargRadCmd->SetParameterName("targetRadius", true);
-  fTargRadCmd->SetUnitCategory("Length");
-  fTargRadCmd->SetDefaultValue(7.);
+  fStepMaxCmd->SetUnitCategory("Length");
+  fTargRadCmd->SetDefaultValue(1.);
   fTargRadCmd->SetDefaultUnit("cm");
   fTargRadCmd->SetUnitCandidates("um mm cm dm m");
   fTargRadCmd->AvailableForStates(G4State_PreInit,G4State_Idle);
   //cmd_map->insert({fTargRadCmd, CMD_Target_Radius});
-
-  fTracPosCmd = new G4UIcmdWithAString("/nDa/det/setTrackerPosition",this);
-  fTracPosCmd->SetGuidance("Set Position of the Chamber.");
-  fTracPosCmd->SetParameterName("choice",false);
-  fTracPosCmd->AvailableForStates(G4State_PreInit,G4State_Idle);
-
-  fTracPosXCmd = new G4UIcmdWithADoubleAndUnit("/nDa/det/setTrackerPositionX",this);
-  fTracPosXCmd->SetGuidance("Set the position vector of tracker. [x] [unit]");
-  fTracPosXCmd->SetParameterName("trackerPosition", true);
-  fTracPosXCmd->SetUnitCategory("Length");
-  fTracPosXCmd->SetDefaultValue(0);
-  fTracPosXCmd->SetDefaultUnit("cm");
-  fTracPosXCmd->SetUnitCandidates("um mm cm dm m");
-  fTracPosXCmd->AvailableForStates(G4State_PreInit,G4State_Idle);
-
-  fTracPosYCmd = new G4UIcmdWithADoubleAndUnit("/nDa/det/setTrackerPositionY",this);
-  fTracPosYCmd->SetGuidance("Set the position Y of tracker. [y] [unit]");
-  fTracPosYCmd->SetParameterName("trackerPosY", true);
-  fTracPosYCmd->SetUnitCategory("Length");
-  fTracPosYCmd->SetDefaultValue(0.);
-  fTracPosYCmd->SetDefaultUnit("cm");
-  fTracPosYCmd->SetUnitCandidates("um mm cm dm m");
-  fTracPosYCmd->AvailableForStates(G4State_PreInit,G4State_Idle);
-
-  fTracPosZCmd = new G4UIcmdWithADoubleAndUnit("/nDa/det/setTrackerPositionZ",this);
-  fTracPosZCmd->SetGuidance("Set the position Z of tracker. [z] [unit]");
-  fTracPosZCmd->SetParameterName("trackerPosZ", true);
-  fTracPosZCmd->SetUnitCategory("Length");
-  fTracPosZCmd->SetDefaultValue(0.);
-  fTracPosZCmd->SetDefaultUnit("cm");
-  fTracPosZCmd->SetUnitCandidates("um mm cm dm m");
-  fTracPosZCmd->AvailableForStates(G4State_PreInit,G4State_Idle);
-
-  //TracPosCmd->SetParameter(G4ThreeVector *nDaDetectorConstruction::fTracPos);
-  //fTracPosCmd->SetParameterName("trackerPos", true);
-  //fTracPosCmd->SetUnitCategory("Length");
-  //fTracPosCmd->SetDefaultValue(0. 0. 0.);
-  //fTracPosCmd->SetDefaultUnit("cm");
-  //fTracPosCmd->SetUnitCandidates("um mm cm dm m");
-  //fTracPosCmd->AvailableForStates(G4State_PreInit,G4State_Idle);
-
 }
+
 //....oooOO0OOooo........oooOO0OOooo........oooOO0OOooo........oooOO0OOooo......
 
 nDaDetectorMessenger::~nDaDetectorMessenger()
@@ -139,10 +99,6 @@ nDaDetectorMessenger::~nDaDetectorMessenger()
   delete fChamMatCmd;
   delete fStepMaxCmd;
   delete fTargRadCmd;
-  delete fTracPosCmd;
-  delete fTracPosXCmd;
-  delete fTracPosYCmd;
-  delete fTracPosZCmd;
   delete fnDaDirectory;
   delete fDetDirectory;
 }
@@ -157,26 +113,12 @@ void nDaDetectorMessenger::SetNewValue(G4UIcommand* command,G4String newValue)
   if( command == fChamMatCmd )
    { fDetectorConstruction->SetChamberMaterial(newValue);}
 
-  if( command == fStepMaxCmd ) 
-   { fDetectorConstruction->SetMaxStep(fStepMaxCmd->GetNewDoubleValue(newValue));}   
-
+  if( command == fStepMaxCmd ) {
+    fDetectorConstruction
+      ->SetMaxStep(fStepMaxCmd->GetNewDoubleValue(newValue));
+  }   
   if( command == fTargRadCmd )
    { fDetectorConstruction->SetTargetRadius(fTargRadCmd->GetNewDoubleValue(newValue));}
-
-   if( command == fTracPosCmd )
-   { fDetectorConstruction->SetTrackerPos(fTracPosCmd->ConvertTo3Vector(newValue));}
-   //{ fDetectorConstruction->SetTrackerPos(fTracPosCmd->G4ThreeVector::setX(newValue));}
-   //{ fDetectorConstruction->SetTrackerPos(fTracPosCmd->ConvertTo3Vector(newValue));}
-   //{ fDetectorConstruction->SetTrackerPos(fTracPosCmd->GetNewDoubleValue->G4ThreeVector::setX(newValue));}
-   
-   if( command == fTracPosXCmd )
-   { fDetectorConstruction->SetTrackerPosX(fTracPosXCmd->GetNewDoubleValue(newValue));}
-
-   if( command == fTracPosYCmd )
-   { fDetectorConstruction->SetTrackerPosY(fTracPosYCmd->GetNewDoubleValue(newValue));}
-
-   if( command == fTracPosZCmd )
-   { fDetectorConstruction->SetTrackerPosZ(fTracPosZCmd->GetNewDoubleValue(newValue));}
 
 }
 

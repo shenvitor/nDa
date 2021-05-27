@@ -7,7 +7,4 @@
 #adding above
 #/run/numberOfThreads 4
 /run/initialize
-/control/execute gps_iso.mac
-/gps/particle neutron
-/gps/energy 14 MeV
 /run/beamOn 10000

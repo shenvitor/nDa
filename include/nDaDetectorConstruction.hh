@@ -77,10 +77,6 @@ class nDaDetectorConstruction : public G4VUserDetectorConstruction
     void SetTargetRadius (G4double);
     void SetMaxStep (G4double );
     void SetCheckOverlaps(G4bool );
-    void SetTrackerPos (G4ThreeVector);
-    void SetTrackerPosX (G4double);
-    void SetTrackerPosY (G4double);
-    void SetTrackerPosZ (G4double);
 
     // Get methods                           //!
     //G4double GetTargetDepth() const;
@@ -90,9 +86,6 @@ class nDaDetectorConstruction : public G4VUserDetectorConstruction
     G4String GetChamberMaterial() const;
     G4double GetTargetRadius() const;
     G4double GetStepMax() const;
-    G4ThreeVector GetTrackerPos() const;
-    //G4double GetTrackerPosY() const;
-    //G4double GetTrackerPosZ() const;
 
   private:
     // methods
@@ -103,11 +96,6 @@ class nDaDetectorConstruction : public G4VUserDetectorConstruction
     G4int fNbOfChambers;
     G4int fNbOfRows;
     G4int fNbOfLevels;
-
-    G4double trackerPosX;
-    G4double trackerPosY;
-    G4double trackerPosZ;
-    G4ThreeVector     fTracPos;        //the vector of tracker position
 
     G4VPhysicalVolume* fPhysTarget;   //!// pointer to the physical Target
     G4LogicalVolume*   fLogicTarget;     // pointer to the logical Target

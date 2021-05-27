@@ -46,6 +46,8 @@
 #include "G4Sphere.hh"
 #include "G4Orb.hh"
 
+#include "G4UnionSolid.hh"
+#include "G4IntersectionSolid.hh"
 #include "G4SubtractionSolid.hh"
 #include "G4LogicalVolume.hh"
 #include "G4PVPlacement.hh"
@@ -75,8 +77,7 @@ nDaDetectorConstruction::nDaDetectorConstruction()
  fLogicTarget(NULL), fLogicChamber(NULL), 
  fTargetMaterial(NULL), fChamberMaterial(NULL), 
  fStepLimit(NULL),
- fCheckOverlaps(true),
- fTracPos(0,0,0)
+ fCheckOverlaps(true)
 {
   fMessenger = new nDaDetectorMessenger(this);
 
@@ -266,13 +267,18 @@ G4VPhysicalVolume* nDaDetectorConstruction::DefineVolumes()
 //*************************************************
   // Target material ball's radius equals 1 to 7 cm
   // setting Radius of material ball
+  // setting radius of Tub shape Hole
+
   //G4double targetRadius = 1.*cm;
-  //G4double targetRadius = 2.*cm;
+  G4double targetRadius = 2.*cm;
   //G4double targetRadius = 3.*cm;
   //G4double targetRadius = 4.*cm;
   //G4double targetRadius = 5.*cm;
   //G4double targetRadius = 6.*cm;
-    G4double targetRadius = 7.*cm;
+  //G4double targetRadius = 7.*cm;
+
+  // Half length og targetBox
+  G4double targetBoxHalfXYZ = 6. *cm;
 //**************************************************
 
   G4double targetDiam = 2*targetRadius;
@@ -373,9 +379,90 @@ G4VPhysicalVolume* nDaDetectorConstruction::DefineVolumes()
   G4cout << "Target is " << 2*targetLength/cm << " cm of "
          << fTargetMaterial->GetName() << G4endl;							*///#########
   //*******************************************************************************
-  //*******************************************************************************
   //Target updated
   G4ThreeVector targetPosition = G4ThreeVector(0,0,targetPosZ);
+  //Define Box and Spheres and Tubs
+ 
+  G4Box* TargetS = new G4Box("targetBox", targetBoxHalfXYZ, targetBoxHalfXYZ, targetBoxHalfXYZ);  //double tubs series1
+  //Half xyz same-> 6cm
+
+  //G4Box* TargetS = new G4Box("targetBox", 6.5*cm, targetBoxHalfXYZ, targetBoxHalfXYZ); //THU hole serie
+  //Construction of THU holes below
+  /*
+  G4Box* T1 = new G4Box("targetHoleT1", 3.*cm/2, 2.*cm/2, targetBoxHalfXYZ);
+  G4Box* T2 = new G4Box("targetHoleT2", 1.*cm/2, 6.*cm/2, targetBoxHalfXYZ);
+  G4Box* H1 = new G4Box("targetHoleH1", 1.*cm/2, 8.*cm/2, targetBoxHalfXYZ);
+  G4Box* H2 = new G4Box("targetHoleH2", 1.*cm/2, 2.*cm/2, targetBoxHalfXYZ);
+  G4Box* H3 = new G4Box("targetHoleH3", 1.*cm/2, 8.*cm/2, targetBoxHalfXYZ);
+  G4Box* U1 = new G4Box("targetHoleU1", 1.*cm/2, 8.*cm/2, targetBoxHalfXYZ);
+  G4Box* U2 = new G4Box("targetHoleU2", 1.*cm/2, 2.*cm/2, targetBoxHalfXYZ);
+  G4Box* U3 = new G4Box("targetHoleU3", 1.*cm/2, 8.*cm/2, targetBoxHalfXYZ);
+  */
+
+  //Construct 2 Tubs for 2 holes sim
+  G4Tubs* TargetS1 = new G4Tubs("TargetHole1", 0, targetRadius, 6.*cm, 0.*deg, 360.*deg);
+  G4Tubs* TargetS2 = new G4Tubs("TargetHole2", 0, targetRadius, 6.*cm, 0.*deg, 360.*deg);
+  
+
+  //Notice: abandon construction below, changed to tubs as shown above
+  //Construction of double spheres below
+  //G4Sphere* TargetS1 = new G4Sphere("targetSp1", 0., targetRadius,  0.*deg, 360.*deg, 0.*deg, 180.*deg);
+  //G4Sphere* TargetS2 = new G4Sphere("targetSp2", 0., targetRadius,  0.*deg, 360.*deg, 0.*deg, 180.*deg);
+  // targetRadius = 1cm default 
+
+  //Define y-Rotation and Z-Transformation Action for Solid 2
+  G4RotationMatrix* yRot = new G4RotationMatrix;
+  yRot->rotateY(0. *rad);
+  G4ThreeVector yTrans1(0, 3.*cm,0);
+  G4ThreeVector yTrans2(0,-3.*cm,0);
+  //Use Subtraction
+  G4SubtractionSolid* subtraction = new G4SubtractionSolid("Box-Tub", TargetS, TargetS1, yRot, yTrans1);
+  G4SubtractionSolid* FinalTargetS= new G4SubtractionSolid("Target", subtraction, TargetS2, yRot, yTrans2); 
+  //Box-Tub*2
+  /*G4Tubs* targetS
+    = new G4Tubs("Target",0.,1.*cm,1.*cm,0.*deg,360.*deg);*/
+  //Udated THU hole shape
+  /*
+  G4ThreeVector T1Trans(-4.*cm, 3.*cm,0);
+  G4ThreeVector T2Trans(-4.*cm,-1.*cm,0);
+  G4ThreeVector H1Trans(-1.*cm,0,0);
+  G4ThreeVector H2Trans(0,0,0);
+  G4ThreeVector H3Trans(1.*cm,0,0);
+  G4ThreeVector U1Trans(3.*cm,0,0);
+  G4ThreeVector U2Trans(4.*cm,-3.*cm,0);
+  G4ThreeVector U3Trans(5.*cm,0,0);
+  G4SubtractionSolid* BoxT1 = new G4SubtractionSolid("Box-T1", TargetS, T1, yRot, T1Trans);
+  G4SubtractionSolid* BoxT2 = new G4SubtractionSolid("Box-T2", BoxT1, T2, yRot, T2Trans);
+  G4SubtractionSolid* BoxH1 = new G4SubtractionSolid("Box-H1", BoxT2, H1, yRot, H1Trans);
+  G4SubtractionSolid* BoxH2 = new G4SubtractionSolid("Box-H2", BoxH1, H2, yRot, H2Trans);
+  G4SubtractionSolid* BoxH3 = new G4SubtractionSolid("Box-H3", BoxH2, H3, yRot, H3Trans);
+  G4SubtractionSolid* BoxU1 = new G4SubtractionSolid("Box-U1", BoxH3, U1, yRot, U1Trans);
+  G4SubtractionSolid* BoxU2 = new G4SubtractionSolid("Box-U2", BoxU1, U2, yRot, U2Trans);
+  G4SubtractionSolid* BoxTHU = new G4SubtractionSolid("THU"  , BoxU2, U3, yRot, U3Trans);
+  */
+
+  fSolidTarget
+    //=BoxTHU;
+    = FinalTargetS;
+    //=subtraction;
+    //=FinalTargetS;
+
+  fLogicTarget  
+    = new G4LogicalVolume(fSolidTarget, fTargetMaterial,"Target",0,0,0);
+  
+  fPhysTarget = new G4PVPlacement( NULL,
+                    targetPosition,
+                    fLogicTarget,    // its logical volume
+                    "Target",        // its name
+                    worldLV,         // its mother volume
+                    true,           // no (or with) boolean operations
+                    0,               // copy number
+                    fCheckOverlaps); // checking overlaps 
+
+  G4cout << "Target is " << targetDiam/cm << " cm of "
+         << fTargetMaterial->GetName() << G4endl;						//#########
+
+  /*
   fSolidTarget
     =new G4Sphere("target", 0., targetRadius, 0.*deg, 360.*deg, 0.*deg, 180.*deg);
   fLogicTarget
@@ -390,10 +477,31 @@ G4VPhysicalVolume* nDaDetectorConstruction::DefineVolumes()
                     fCheckOverlaps); // checking overlaps 
 
   G4cout << "Target is " << targetDiam/cm << " cm of "
-         << fTargetMaterial->GetName() << G4endl;							//#########
+         << fTargetMaterial->GetName() << G4endl;*/							//#########
+
 
   // Tracker
  																		//what about only tracker
+  double x=0;
+  double y=0;
+  double z=0;
+//*******************************
+// Moving set
+  //double x = 1 *cm;         // R1
+  //double x = 2 *cm;         // R2
+  //double x = -1 *cm;        // L1
+  //double x = -2 *cm;        // L2
+
+  //double y= 1 *cm;          // U1
+  //double y= 2 *cm;          // U2
+  //double y= -1 *cm;         // D1
+  //double y= -2 *cm;         // D2
+
+// And also with their combination RU, RD, LU, LD
+
+//End of moving set
+//********************************
+  G4ThreeVector positionTracker = G4ThreeVector(x,y,z);
 //  G4ThreeVector positionTracker = G4ThreeVector(fNbOfChambers%2?0:chamberSpacing/2.,fNbOfLevels%2?0:chamberLevelSpacing/2.,0);
 // above?
 
@@ -407,52 +515,7 @@ G4VPhysicalVolume* nDaDetectorConstruction::DefineVolumes()
     			 0.*deg, 			//pSphi: phi angle in radius
     			 360.*deg);			//pDphi: angle of segment of radians */
  //***********************************************************
-  //G4double trackerPosX = 0*cm;   // Tracker Position X Can be varied
-  //G4double trackerPosY = 0*cm;   // Tracker Position Y Can be varied
-  //G4double trackerPosZ = 0*cm;   // Tracker Position Z Can be varied
 
-  trackerPosX = 0*cm;   // Tracker Position X Can be varied
-  trackerPosY = 0*cm;   // Tracker Position Y Can be varied
-  trackerPosZ = 0*cm;   // Tracker Position Z Can be varied
-
-  //***********************************************************
-  //trackerPosX = 0.5*cm; 
-  //trackerPosX = 1*cm; 
-  //trackerPosX = 1.5*cm; 
-  //trackerPosX = 2*cm; 
-  //trackerPosX = 2.5*cm; 
-  //trackerPosX = 3*cm;
-  //trackerPosX = 4*cm;
-  //trackerPosX = 5*cm;
-
-  //trackerPosX = -0.5*cm; 
-  //trackerPosX = -1*cm; 
-  //trackerPosX = -1.5*cm; 
-  //trackerPosX = -2*cm; 
-  //trackerPosX = -3*cm;
-  //trackerPosX = -4*cm;
-  //trackerPosX = -5*cm; 
-  //*********************************************************** 
-  //trackerPosY = 0.5*cm;   
-  //trackerPosY = 1*cm; 
-  //trackerPosY = 1.5*cm;   
-  //trackerPosY = 2*cm; 
-  //trackerPosY = 2.5*cm; 
-  //trackerPosY = 3*cm;
-  //trackerPosY = 4*cm;
-  //trackerPosY = 5*cm;
-
-  //trackerPosY = -0.5*cm; 
-  //trackerPosY = -1*cm; 
-  //trackerPosY = -1.5*cm; 
-  //trackerPosY = -2*cm; 
-  //trackerPosY = -3*cm;
-  //trackerPosY = -4*cm;
-  //trackerPosY = -5*cm;
-  //***********************************************************
-
-  G4ThreeVector trackerPos = G4ThreeVector(trackerPosX,trackerPosY,trackerPosZ);
-  fTracPos = trackerPos;
  // update tracker to Box
   G4VSolid* trackerS
     = new G4Box("tracker", trackerX/2., trackerY/2., trackerZ/2.);
@@ -462,8 +525,7 @@ G4VPhysicalVolume* nDaDetectorConstruction::DefineVolumes()
   //= new G4LogicalVolume(trackerS, G4Material::GetMaterial("G4_WATER"), "Tracker",0,0,0);  
   
   fPhysTracker = new G4PVPlacement(0,               // no rotation
-                    //trackerPos,      // at (x,y,z)
-                    fTracPos,        // at (x,y,z)
+                    positionTracker, // at (x,y,z)
                     trackerLV,       // its logical volume
                     "Tracker",       // its name
                     worldLV,         // its mother  volume
@@ -495,10 +557,7 @@ G4VPhysicalVolume* nDaDetectorConstruction::DefineVolumes()
   G4double halfWidth = 0.5*chamberWidth;
   G4double rmaxFirst = 0.5 * firstLength;
   G4double rmaxIncr = 0.0;*/
-//*******************************************************************************
-//******************************************************************************* 
-//*******************************************************************************
-  // Chamber segments
+
   // chamberDiam --> chamberWidth or chamberHeight --> X or Y
   // chamberLength --> chamberDepth  --> Z
 
@@ -692,45 +751,6 @@ G4double nDaDetectorConstruction::GetTargetRadius() const
    if(!fPhysTarget) return 0.;
    auto targetS = (G4Sphere*)(fSolidTarget);
    return targetS->GetOuterRadius();
-}
-
-//...ooooOOOOOOOO....
-void nDaDetectorConstruction::SetTrackerPos(G4ThreeVector pos)
-{
-   auto geoMgr = G4GeometryManager::GetInstance();
-   auto trackerPV= (G4VPhysicalVolume*)(fPhysTracker);
-   geoMgr->OpenGeometry(fPhysTracker);
-   trackerPV->SetTranslation(pos);
-   geoMgr->CloseGeometry(true, false, fPhysTracker);
-}
-void nDaDetectorConstruction::SetTrackerPosX(G4double posX)
-{
-   auto geoMgr = G4GeometryManager::GetInstance();
-   auto trackerPV= (G4VPhysicalVolume*)(fPhysTracker);
-   geoMgr->OpenGeometry(fPhysTracker);
-   trackerPosX=posX;
-   trackerPV->SetTranslation(fTracPos);
-   geoMgr->CloseGeometry(true, false, fPhysTracker);
-}
-void nDaDetectorConstruction::SetTrackerPosY(G4double posY)
-{
-   auto geoMgr = G4GeometryManager::GetInstance();
-   auto trackerPV= (G4VPhysicalVolume*)(fPhysTracker);
-   geoMgr->OpenGeometry(fPhysTracker);
-   //trackerPV->SetTranslation(0,posY,0);
-   trackerPosY=posY;
-   trackerPV->SetTranslation(fTracPos);
-   geoMgr->CloseGeometry(true, false, fPhysTracker);
-}
-void nDaDetectorConstruction::SetTrackerPosZ(G4double posZ)
-{
-   auto geoMgr = G4GeometryManager::GetInstance();
-   auto trackerPV= (G4VPhysicalVolume*)(fPhysTracker);
-   geoMgr->OpenGeometry(fPhysTracker);
-   //trackerPV->SetTranslation(0,0,posZ);
-   trackerPosZ=posZ;
-   trackerPV->SetTranslation(fTracPos);
-   geoMgr->CloseGeometry(true, false, fPhysTracker);
 }
 
 

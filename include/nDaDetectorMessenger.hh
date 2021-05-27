@@ -74,12 +74,6 @@ class nDaDetectorMessenger: public G4UImessenger
     G4UIcmdWithADoubleAndUnit* fStepMaxCmd;
     G4UIcmdWithADoubleAndUnit* fTargRadCmd;
 
-    G4UIcmdWithADoubleAndUnit* fTracPosXCmd;
-    G4UIcmdWithADoubleAndUnit* fTracPosYCmd;
-    G4UIcmdWithADoubleAndUnit* fTracPosZCmd;
-
-    G4UIcmdWithAString* fTracPosCmd;
-
     /*enum cmd_name_t {
       CMD_OTHER=0,
       CMD_Target_Material,
